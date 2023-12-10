@@ -30,16 +30,25 @@ for y in range(len(grid)):
 
 
 real = []
+maybegears = defaultdict(lambda: [])
 for start, length in nums:
     adj = False
+    adjgears = []
     for y in range(start[0]-1, start[0]+2):
         for x in range(start[1]-1, start[1]+1+length):
             try:
                 char = grid.get(y, {})[x]
             except:
                 char = '.'
-            adj = adj or (not char.isdigit() and char != '.')
-    if adj:
-        real.append(int(''.join(grid[start[0]][start[1]:start[1]+length])))
+            if char == '*':
+                adjgears.append((y,x))
 
-print(sum(real))
+    for gear in adjgears:
+        maybegears[gear].append(int(''.join(grid[start[0]][start[1]:start[1]+length])))
+
+ratios = []
+for values in maybegears.values():
+    if len(values) == 2:
+        ratios.append(values[0]*values[1])
+
+print(sum(ratios))
