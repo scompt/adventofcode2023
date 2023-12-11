@@ -17,17 +17,29 @@ for l in lines[2:]:
     else:
         currentmap = None
 
+memo = defaultdict(lambda: {})
 locations = []
-for seed in seeds:
-    position = seed
-    mapp = 'seed'
-    while mapp != 'location':
-        destmap  = list(maps[mapp].keys()).pop(0)
-        amap = maps[mapp][destmap]
-        for deststart, sourcestart, length in amap:
-            if position >= sourcestart and position < sourcestart+length:
-                position = deststart + (position-sourcestart)
+for froms, length in zip(seeds[0::2], seeds[1::2]):
+    for seed in range(froms, froms+length):
+        position = seed
+        mapp = 'seed'
+        memo_locs = []
+        while mapp != 'location':
+            memo_loc = (mapp, position)
+            if memo_loc in memo:
+                print('memo')
+                position = memo[memo_loc]
                 break
-        mapp = destmap
-    locations.append(position)
+            memo_locs.append(memo_loc)
+            destmap  = list(maps[mapp].keys()).pop(0)
+            amap = maps[mapp][destmap]
+            for deststart, sourcestart, length in amap:
+                if position >= sourcestart and position < sourcestart+length:
+                    position = deststart + (position-sourcestart)
+                    break
+            mapp = destmap
+        print(memo_locs)
+        for memo_loc in memo_locs:
+            memo[memo_loc] = position
+        locations.append(position)
 print(min(locations))
